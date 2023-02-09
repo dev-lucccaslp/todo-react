@@ -11,43 +11,29 @@ import {
   ImageBoard,
 
 } from './style';
-
-import Board from '../../assets/Clipboard.svg';
-
 import { PlusCircle } from 'phosphor-react';
-import { TaskCreateds } from '../TasksCreateds';
+import { TaskProps } from '../TasksCreateds';
+import { v4 as uuidv4 } from "uuid";
 
-interface Props {
-  taskActive: {
-    id: string;
-    title: string;
-    isComplete: boolean;
-  }[]
-  handleChecked:(id:string)=>void;
-}
-
-export function NewTask(props: Props) {
-
-  const [task, setTask] = useState([
-    'ir almoçar no zézinho'
-  ]);
-
-  const [newTask, setNewTask] = useState('')
+export function NewTask({ setTaskList }: any) {
+  const [newTask, setNewTask] = useState<TaskProps>()
 
   function handleTextChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    event.target.setCustomValidity('');
+    const title = event.target.value
 
-    setTask([...task, newTask])
-    setNewTask(event.target.value);
+    setNewTask({ id: uuidv4(), title, isComplete: false })
+
   }
 
   function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('Preencha o campo!');
-
   }
 
   function handleTaskFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setTaskList((task: TaskProps[]) => [...task, newTask])
+    event.target.reset();
 
   }
 
@@ -79,35 +65,6 @@ export function NewTask(props: Props) {
         </TaskCompleted>
       </Header>
 
-      <Content>
-
-
-        {props.taskActive.length === 0 ?
-          <>
-            <ImageBoard>
-              <img src={Board} />
-            </ImageBoard>
-            <h1>Você ainda não tem tarefas cadastradas</h1>
-            <p>Crie tarefas e organize seus itens a fazer</p>
-
-          </> :
-
-          <>
-            {props.taskActive.map((item) => {
-
-              return (
-                <TaskCreateds
-                  key={item.id}
-                  taskActive={item} 
-                  handleChecked={props.handleChecked}
-                  />
-              )
-            })}
-          </>
-
-        }
-
-      </Content>
     </Container>
   )
 }
